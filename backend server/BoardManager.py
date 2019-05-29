@@ -1,5 +1,6 @@
 import pymongo
 import time
+from bson.json_util import dumps, loads
 
 class BoardManager:
 
@@ -12,7 +13,7 @@ class BoardManager:
     #returns the JSON of a board's stats
     def getBoardStats(self, board):
         assert(self.boardExists(board))
-        return next(self.boardStats.find({"tag": board}))
+        return dumps(self.boardStats.find({"tag": board}))
     
     #check if a board exists
     def boardExists(self, boardTag):
@@ -37,15 +38,16 @@ class BoardManager:
             raise Exception("failed to add board")
 
     #add a new post to the desired board with the desired info
-    def addPost(self, board, user, thread, content, image, replies):
+    def addPost(self, board, subject, user, thread, content, image, replies):
         assert(self.boardExists(board))
         try:
             if (thread != True):
                 assert(self.threadExists(board, thread))
             boardDB = self.db[board]
-            postId = self.getBoardStats(board)["id"]
+            postId = loads(self.getBoardStats(board))[0]["id"]
             post = {
                 "id": postId,
+                "subject": subject,
                 "user": user,
                 "thread": thread,
                 "content": content,
@@ -68,7 +70,7 @@ class BoardManager:
             boardDB = self.db[board]
             query = {"thread": True}
             results = boardDB.find(query)
-            return [x for x in results]
+            return dumps(results)
         except:
             raise Exception("failed to get threads")
     
@@ -77,9 +79,9 @@ class BoardManager:
         assert(self.boardExists(board))
         try:
             boardDB = self.db[board]
-            parent = next(boardDB.find({"id": thread}))
-            posts = boardDB.find({"thread": thread})    
-            return [parent] + [x for x in posts]
+            parent = dumps(boardDB.find({"id": thread}))
+            posts = dumps(boardDB.find({"thread": thread}))    
+            return dumps(loads(parent) + loads(posts))
         except:
             raise Exception("failed to get thread")
 

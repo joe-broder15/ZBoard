@@ -1,5 +1,6 @@
 import unittest
 from BoardManager import BoardManager
+from bson.json_util import loads
 
 class Tests(unittest.TestCase):
     
@@ -20,9 +21,9 @@ class Tests(unittest.TestCase):
         b.addBoard('tst', 'test', 'test', False, 0)
     
         for i in range(0, 100):
-            b.addPost('tst', 'anon', True, 'test post ' + str(i), [], [])
+            b.addPost('tst', 'nothing', 'anon', True, 'test post ' + str(i), [], [])
 
-        threads = b.getThreads('tst')
+        threads = loads(b.getThreads('tst'))
         
         for i in range(0, 100):
             thread = threads[i]
@@ -39,14 +40,14 @@ class Tests(unittest.TestCase):
 
         assert(not b.threadExists('tst', 0))
         
-        b.addPost('tst', 'anon', True, 'test thread', [], [])
+        b.addPost('tst', 'nothing', 'anon', True, 'test thread', [], [])
 
         assert(b.threadExists('tst', 0))
 
         for i in range(0, 100):
-            b.addPost('tst', 'anon', 0, 'test post in thread 0 ' + str(i), [], [])
+            b.addPost('tst', 'nothing', 'anon', 0, 'test post in thread 0 ' + str(i), [], [])
 
-        thread = b.getThread('tst', 0)
+        thread = loads(b.getThread('tst', 0))
         
         self.assertTrue(thread[0]["thread"])
         self.assertEqual(thread[0]["content"], "test thread")
@@ -63,17 +64,17 @@ class Tests(unittest.TestCase):
         b.deleteBoard('tst', 0)
         b.addBoard('tst', 'test', 'test', False, 0)
         
-        b.addPost('tst', 'anon', True, 'test thread', [], [])
+        b.addPost('tst', 'nothing', 'anon', True, 'test thread', [], [])
         for i in range(0, 100):
-            b.addPost('tst', 'anon', 0, 'test post in thread 0 ' + str(i), [], [])
+            b.addPost('tst', 'nothing', 'anon', 0, 'test post in thread 0 ' + str(i), [], [])
 
-        thread = b.getThread('tst', 0)
+        thread = loads(b.getThread('tst', 0))
         self.assertEquals(len(thread), 101)
 
         for i in range(1, 101):
             b.deletePost('tst', i)
 
-        thread = b.getThread('tst', 0)
+        thread = loads(b.getThread('tst', 0))
         self.assertEquals(len(thread), 1)
 
         b.deleteBoard('tst', 0)
@@ -84,11 +85,11 @@ class Tests(unittest.TestCase):
         b.deleteBoard('tst', 0)
         b.addBoard('tst', 'test', 'test', False, 0)
         
-        b.addPost('tst', 'anon', True, 'test thread', [], [])
+        b.addPost('tst', 'nothing', 'anon', True, 'test thread', [], [])
         for i in range(0, 100):
-            b.addPost('tst', 'anon', 0, 'test post in thread 0 ' + str(i), [], [])
+            b.addPost('tst', 'nothing', 'anon', 0, 'test post in thread 0 ' + str(i), [], [])
 
-        thread = b.getThread('tst', 0)
+        thread = loads(b.getThread('tst', 0))
         self.assertEquals(len(thread), 101)
 
         b.deletePost('tst', 0)
