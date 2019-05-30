@@ -35,6 +35,7 @@ class Boards(Resource):
 
 class BoardId(Resource):
 
+    #get all threads on a board
     def get(self, boardTag):
         b = BoardManager() 
         try:
@@ -43,27 +44,76 @@ class BoardId(Resource):
         except:
             return {'success': False}
 
+class Thread(Resource):
+
+    #add a new thread to a board
+    def put(self, boardTag):
+        b = BoardManager()
+        try:
+            data = request.form.to_dict()
+            b.addThread(boardTag, data['subject'], data['user'], data['content'], data['image'])
+            return {'success': True}
+        except:
+            {'success': False}
+    
+    def delete(self, boardTag):
+        b = BoardManager()
+        try:
+            data = request.form.to_dict()
+            b.deleteThread(boardTag, data['threadId'])
+            return {'success': True}
+        except:
+            return {'success': False}
+
+class ThreadId(Resource):
+
+    #add a new thread to a board
+    def get(self, boardTag, threadId):
+        b = BoardManager()
+        try:
+            thread = b.getThread(boardTag, threadId)
+            return thread
+        except:
+            {'success': False}
+
+class Post(Resource):
+
+    #add a post to a thread 
+    def put(self, boardTag, threadId):
+        b = BoardManager()
+        try:
+            data = request.form.to_dict()
+            b.addPost(boardTag, data['subject'], data['user'], threadId, data['content'], data['image'], data['mentions'])
+            return {'success': True}
+        except:
+            {'success': False}
+
+class BoardStats(Resource):
+    #add a post to a thread 
+    def get(self, boardTag):
+        b = BoardManager()
+        try:
+            return b.getBoardStats(boardTag)
+        except:
+            {'success': False}
+
+class threadStats(Resource):
+    #add a post to a thread 
+    def get(self, boardTag, threadId):
+        b = BoardManager()
+        try:
+            return b.getThreadStats(boardTag, threadId)
+        except:
+            {'success': False}
+    
 
 api.add_resource(Boards, '/boards')
 api.add_resource(BoardId, '/boards/<boardTag>')
-
-
-
-#when the site is visited at the root url, render index.html
-# @app.route('/panel')
-# def index():
-#     return '<h1>TODO: add admin panel</h1>'
-    
-# @app.route('/boards/<board>')
-# def index(board):
-#     b = BoardManager()
-#     try:
-#         return b.getThreads(board)
-#     return render_template('index.html')
-
-# @app.route('/threads/<thread>')
-# def index(thread):
-#     return render_template('index.html')
+api.add_resource(Thread, '/boards/<boardTag>/thread')
+api.add_resource(ThreadId, '/boards/<boardTag>/thread/<threadId>')
+api.add_resource(Post, '/boards/<boardTag>/thread/<threadId>/post')
+api.add_resource(BoardStats, '/stats/boards/<boardTag>')
+api.add_resource(ThreadStats, '/stats/boards/<boardTag>/threads/<threadId>')
 
 #run app on 0.0.0.0:5000
 if __name__ == '__main__':
