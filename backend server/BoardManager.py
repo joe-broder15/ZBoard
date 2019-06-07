@@ -54,43 +54,43 @@ class BoardManager:
 
     #add a new post to the desired board with the desired info
     def addPost(self, board, subject, user, thread, content, image, mentions):
-        try:
-            assert(self.boardExists(board))
-            assert(self.threadExists(board, thread))
-            boardDB = self.db[board]
-            threadDB = self.db[board + '_threads']
-            postId = loads(self.getBoardStats(board))[0]["id"]
-            post = {
-                "id": postId,
-                "subject": subject,
-                "user": user,
-                "thread": thread,
-                "content": content,
-                "date": time.time(),
-                "image": image,
-                "replies": [],
-                "mentions": mentions,
-                "flagged": False
-            }
+        # try:
+        assert(self.boardExists(board))
+        assert(self.threadExists(board, thread))
+        boardDB = self.db[board]
+        threadDB = self.db[board + '_threads']
+        postId = loads(self.getBoardStats(board))[0]["id"]
+        post = {
+            "id": postId,
+            "subject": subject,
+            "user": user,
+            "thread": thread,
+            "content": content,
+            "date": time.time(),
+            "image": image,
+            "replies": [],
+            "mentions": mentions,
+            "flagged": False
+        }
 
-            newVal = {"$set": {"id": postId +1}}
-            query = {"tag":board}
-            self.boardStats.update_one(query, newVal)
+        newVal = {"$set": {"id": postId +1}}
+        query = {"tag":board}
+        self.boardStats.update_one(query, newVal)
 
-            postCount = loads(self.getThreadStats(board, thread))[0]["postCount"]
-            newVal = {"$set": {"postCount": postCount + 1}}
-            query = {"id":thread}
-            threadDB.update_one(query, newVal)
+        postCount = loads(self.getThreadStats(board, thread))[0]["postCount"]
+        newVal = {"$set": {"postCount": postCount + 1}}
+        query = {"id":thread}
+        threadDB.update_one(query, newVal)
 
-            boardDB.insert_one(post)
+        boardDB.insert_one(post)
 
-            for m in mentions:
-                query = {"id":m}
-                newVal = {"$push": {"replies": postId}}
-                boardDB.update_one(query, newVal)
+        for m in mentions:
+            query = {"id":m}
+            newVal = {"$push": {"replies": postId}}
+            boardDB.update_one(query, newVal)
 
-        except:
-            raise Exception("failed to add post");
+        # except:
+        #     raise Exception("failed to add post");
     
     #create a new thread
     def addThread(self, board, subject, user, content, image):
@@ -179,3 +179,14 @@ class BoardManager:
             self.boardStats.delete_many(query)
         except:
             raise Exception("failed to delete board")
+    
+    def boardList(self):
+        try:
+            allBoards = self.boardStats.find()
+            tags = []
+            for i in allBoards:
+                tags.append(i['tag'])
+            return dumps(tags)
+        except:
+            raise Exception("failed to get list of boards")
+
