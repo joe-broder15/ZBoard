@@ -1,0 +1,22 @@
+#Bar {
+    height: 25px;
+    width: 100%;
+    position: fixed;
+    background-color: white;
+    box-shadow: 0px 1px 3px #888888;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: space-between;
+}
+
+.tagLink {
+    margin-right: 10px;
+    margin-left: 5px;
+}
+#toolbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: right; 
+}

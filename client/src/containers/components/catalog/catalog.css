@@ -1,0 +1,19 @@
+#CatalogThreadContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-evenly; 
+    width: 100%;
+    padding: 10px;  
+}
+
+#testD {
+    width: 200px;
+    height: 200px;
+    background-color: red;
+}
+
+#DragGaurd {
+    width: 100%;
+}

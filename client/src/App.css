@@ -23,6 +23,32 @@
   color: #61dafb;
 }
 
+.VerticalContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;  
+
+}
+
+.HorizontalContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+#Container {
+  width: 100%;
+  height: 100%;
+}
+
+div .thinLine {
+  height: 1px;
+  width: 100%;
+  background-color: black;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -31,3 +57,8 @@
     transform: rotate(360deg);
   }
 }
+
+#ThreadContainer {
+  padding: 40px;
+}
+

@@ -1,0 +1,25 @@
+#ThreadCardContainer {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+#ThreadCardBar {
+    border: 1px black solid;
+    padding: 5px;
+    width: 100%;  
+}
+
+#ThreadCardPostBody {
+    border: 1px black solid;
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: left;
+    align-content: flex-start;
+}
+
+#ThreadCardPostBody img {
+    margin: 3px;
+}

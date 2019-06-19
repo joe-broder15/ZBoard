@@ -151,9 +151,11 @@ function getBoardList() {
         if(error) {
             return console.dir(error);
         }
-        return console.dir(JSON.parse(body));
+        let z = JSON.parse(JSON.parse(body));
+        return console.dir(z[0]);
     });
 }
 
+getBoardList()
 
 

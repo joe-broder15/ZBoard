@@ -1,0 +1,12 @@
+#BoardsList {
+    display: flex;
+    flex-direction: column;
+}
+
+#nsfwTag {
+    color: red;
+}
+
+#sfwTag {
+    color: black;
+}

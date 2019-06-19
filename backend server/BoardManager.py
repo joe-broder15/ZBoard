@@ -14,7 +14,7 @@ class BoardManager:
     def getBoardStats(self, board):
         try:
             assert(self.boardExists(board))
-            return dumps(self.boardStats.find({"tag": board}))
+            return dumps(self.boardStats.find({"tag": board}), separators=(',', ':'))
         except:
             raise Exception("failed to get board stats")
     
@@ -37,7 +37,7 @@ class BoardManager:
             assert(self.threadExists(board, thread))
             threadDB = self.db[board + '_threads']
             query = {"id": thread}
-            return dumps(threadDB.find(query))
+            return dumps(threadDB.find(query), separators=(',', ':'))
         except:
             raise Exception("failed to get thread stats")
 
@@ -119,12 +119,12 @@ class BoardManager:
             threadDB = self.db[board + '_threads']
             threads = []
             for t in threadDB.find({}):
-                parentPost = loads(dumps(boardDB.find({"id":t["id"]})))[0]
+                parentPost = loads(dumps(boardDB.find({"id":t["id"]}), separators=(',', ':')))[0]
                 t["post"] = parentPost
                 threads.append(t)
             #query = {"thread": True}
             #3esults = boardDB.find(query)
-            return dumps(threads)
+            return dumps(threads, separators=(',', ':'))
         except:
             raise Exception("failed to get threads")
     
@@ -135,9 +135,9 @@ class BoardManager:
             boardDB = self.db[board]
             threadDB = self.db[board + '_threads']
             thread = loads(self.getThreadStats(board, threadId))[0]
-            posts = dumps(boardDB.find({"thread": threadId}))
+            posts = dumps(boardDB.find({"thread": threadId}), separators=(',', ':'))
             thread["posts"] = loads(posts)
-            return dumps(thread)
+            return dumps(thread, separators=(',', ':'))
         except:
             raise Exception("failed to get thread")
 
@@ -183,10 +183,12 @@ class BoardManager:
     def boardList(self):
         try:
             allBoards = self.boardStats.find()
-            tags = []
-            for i in allBoards:
-                tags.append(i['tag'])
-            return dumps(tags)
-        except:
+            # tags = []
+            # for i in allBoards:
+            #     tags.append(i)
+            return dumps(allBoards, separators=(',', ':'))
+        except Exception as e:
+            print(e)
             raise Exception("failed to get list of boards")
+
 
