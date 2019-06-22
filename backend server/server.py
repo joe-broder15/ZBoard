@@ -9,6 +9,9 @@ import string
 from PIL import Image
 from BoardManager import BoardManager
 
+#UPDATE: the word nonce is used to refference an admin key
+
+#specify file types and uploads folder
 UPLOAD_FOLDER = 'static/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
@@ -17,6 +20,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 api = Api(app)
 cors = CORS(app, origins="http://localhost:3000", resources=r'/api/*', allow_headers='content-type')
 
+#checks if a file is of the allowed type
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -44,6 +48,7 @@ class Boards(Resource):
         except:
             return {'success': False}
 
+#get all threads on a board at /boards/tag
 class BoardId(Resource):
 
     #get all threads on a board
@@ -55,9 +60,11 @@ class BoardId(Resource):
         except:
             return {'success': False}
 
+#add and delete a thread at /boards/tag/thread
 class Thread(Resource):
 
     #add a new thread to a board
+    #params: subject, user, postBody, and Image
     def post(self, boardTag):
         b = BoardManager()
         try:
@@ -68,6 +75,8 @@ class Thread(Resource):
         except:
             return {'success': False}
     
+    #delete a thread from a board
+    #params: threadId
     def delete(self, boardTag):
         b = BoardManager()
         try:
@@ -77,9 +86,10 @@ class Thread(Resource):
         except:
             return {'success': False}
 
+#get an entire thread at /boards/tag/thread/id
 class ThreadId(Resource):
 
-    #add a new thread to a board
+    #get a specific thread
     def get(self, boardTag, threadId):
         b = BoardManager()
         try:
@@ -88,9 +98,11 @@ class ThreadId(Resource):
         except:
             {'success': False}
 
+#post in a thread at /boards/tag/thread/id/post
 class Post(Resource):
 
     #add a post to a thread 
+    #params: subject, user, content, image, mentions
     def post(self, boardTag, threadId):
         b = BoardManager()
         # try:
@@ -100,8 +112,10 @@ class Post(Resource):
         # except:
             # {'success': False}
 
+#get board stats at /stats/boards/tag
 class BoardStats(Resource):
-    #add a post to a thread 
+    
+    #get the stats for a given board
     def get(self, boardTag):
         b = BoardManager()
         try:
@@ -109,8 +123,10 @@ class BoardStats(Resource):
         except:
             {'success': False}
 
+#get thread stats /stats/boards/tag/threads/id
 class ThreadStats(Resource):
-    #add a post to a thread 
+    
+    #get stats for a given thread
     def get(self, boardTag, threadId):
         b = BoardManager()
         try:
@@ -118,7 +134,10 @@ class ThreadStats(Resource):
         except:
             {'success': False}
     
+#get list of all board stats at /stats/boards
 class BoardList(Resource):
+    
+    #get list of board stats
     def get(self):
         b = BoardManager()
         try:
@@ -128,12 +147,11 @@ class BoardList(Resource):
         except:
             return {'success': False}
 
+#upload files at /upload
 class Upload(Resource):
+    
+    #handles file uploads
     def post(self):
-        # try:
-        # check if the post request has the file part
-        # if 'file' not in request.files:
-        #     raise Exception("wrong file extension")
 
         file = request.files['file']
         
@@ -157,13 +175,16 @@ class Upload(Resource):
             im.thumbnail(size)
             im.save(fname)
 
-            # return redirect(url_for('uploaded_file', filename=filename))
             return {'success': True, 'fileName': filename}
         return {'success': False}
         # except:
         #     return {'success': False}
 
+#authenticate an admin key at /admin
 class Admin(Resource):
+
+    #authenticates an admin key
+    #params key
     def post(self):
         b = BoardManager();
         try:
@@ -172,6 +193,7 @@ class Admin(Resource):
         except:
             return {'success': False}
 
+#url endpoints for the above functions
 api.add_resource(Boards, '/api/boards')
 api.add_resource(BoardId, '/api/boards/<boardTag>')
 api.add_resource(Thread, '/api/boards/<boardTag>/thread')

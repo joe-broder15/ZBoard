@@ -3,15 +3,26 @@ import time
 import hashlib
 from bson.json_util import dumps, loads
 
+#this class is the bulk of the backend
+#it's a simple wrapper around a mongo server
 class BoardManager:
+    
 
     #construct a new board manager with the specified board
     def __init__(self):
+
+        #creates mongo client on the following port
         self.dbClient = pymongo.MongoClient("mongodb://localhost:27017/")
+
+        #main is the db used primarily
         self.db = self.dbClient['main']
+
+        #table containing board stats
         self.boardStats = self.db['boardStats']
     
+
     #returns the JSON of a board's stats
+    #these stats consist of a tag, name, description, boolean for nsfw, and the next id to be assigned
     def getBoardStats(self, board):
         try:
             assert(self.boardExists(board))
@@ -25,6 +36,7 @@ class BoardManager:
         return self.boardStats.count(query) != 0
     
     #check if a thread exists
+    #simply looks in the db of thread stats for a board and returns wether an object exists for the specified id
     def threadExists(self, boardTag, thread):
         assert(self.boardExists(boardTag))
         query = {"id": thread}
@@ -32,6 +44,7 @@ class BoardManager:
         return threadDB.count(query) != 0
     
     #get thread stats
+    #threads have an id, boolean flagged, subject, pinned boolean, post count, and date
     def getThreadStats(self, board, thread):
         try:
             assert(self.boardExists(board))
@@ -44,6 +57,7 @@ class BoardManager:
 
 
     #add a board to the database
+    #has all of the board state and requires an admin key
     def addBoard(self, tag, desc, name, nsfw, adminKey):
         assert(self.isAdminKey(adminKey))
         assert(not self.boardExists(tag))
@@ -54,46 +68,49 @@ class BoardManager:
             raise Exception("failed to add board")
 
     #add a new post to the desired board with the desired info
+    #posts have a subject, user, thread number, content, image, mentions,date, and replies
+    #not all of these are given when creating a new post
     def addPost(self, board, subject, user, thread, content, image, mentions):
-        # try:
-        assert(self.boardExists(board))
-        assert(self.threadExists(board, thread))
-        boardDB = self.db[board]
-        threadDB = self.db[board + '_threads']
-        postId = loads(self.getBoardStats(board))[0]["id"]
-        post = {
-            "id": postId,
-            "subject": subject,
-            "user": user,
-            "thread": thread,
-            "content": content,
-            "date": time.time(),
-            "image": image,
-            "replies": [],
-            "mentions": mentions,
-            "flagged": False
-        }
+        try:
+            assert(self.boardExists(board))
+            assert(self.threadExists(board, thread))
+            boardDB = self.db[board]
+            threadDB = self.db[board + '_threads']
+            postId = loads(self.getBoardStats(board))[0]["id"]
+            post = {
+                "id": postId,
+                "subject": subject,
+                "user": user,
+                "thread": thread,
+                "content": content,
+                "date": time.time(),
+                "image": image,
+                "replies": [],
+                "mentions": mentions,
+                "flagged": False
+            }
 
-        newVal = {"$set": {"id": postId +1}}
-        query = {"tag":board}
-        self.boardStats.update_one(query, newVal)
+            newVal = {"$set": {"id": postId +1}}
+            query = {"tag":board}
+            self.boardStats.update_one(query, newVal)
 
-        postCount = loads(self.getThreadStats(board, thread))[0]["postCount"]
-        newVal = {"$set": {"postCount": postCount + 1}}
-        query = {"id":thread}
-        threadDB.update_one(query, newVal)
+            postCount = loads(self.getThreadStats(board, thread))[0]["postCount"]
+            newVal = {"$set": {"postCount": postCount + 1}}
+            query = {"id":thread}
+            threadDB.update_one(query, newVal)
 
-        boardDB.insert_one(post)
+            boardDB.insert_one(post)
 
-        for m in mentions:
-            query = {"id":m}
-            newVal = {"$push": {"replies": postId}}
-            boardDB.update_one(query, newVal)
+            for m in mentions:
+                query = {"id":m}
+                newVal = {"$push": {"replies": postId}}
+                boardDB.update_one(query, newVal)
 
-        # except:
-        #     raise Exception("failed to add post");
+        except:
+            raise Exception("failed to add post");
     
-    #create a new thread
+    #create a new thread, takes post parameters without mentions
+    #creates a new thread object for stats and makes a post
     def addThread(self, board, subject, user, content, image):
         assert(self.boardExists(board))
         try:
@@ -113,6 +130,7 @@ class BoardManager:
             raise Exception("failed to add thread")
     
     #get all threads from a speficic board
+    #returns a list of thread stat objects contianing their parent post for a given board
     def getThreads(self, board):
         assert(self.boardExists(board))
         try:
@@ -129,7 +147,7 @@ class BoardManager:
         except:
             raise Exception("failed to get threads")
     
-    #get all posts in a thread by their id
+    #get a list of all posts in a thread by their id
     def getThread(self, board, threadId):
         assert(self.boardExists(board))
         try:
@@ -142,7 +160,7 @@ class BoardManager:
         except:
             raise Exception("failed to get thread")
 
-    #deletes a single post, or an entire thread if the post to be deleted is a thread parent
+    #deletes a single post
     def deletePost(self, board, postId):
         assert(self.boardExists(board))
         try:
@@ -181,17 +199,16 @@ class BoardManager:
         except:
             raise Exception("failed to delete board")
     
+    #get a list of all board stat objects
     def boardList(self):
         try:
             allBoards = self.boardStats.find()
-            # tags = []
-            # for i in allBoards:
-            #     tags.append(i)
             return dumps(allBoards, separators=(',', ':'))
         except Exception as e:
             print(e)
             raise Exception("failed to get list of boards")
 
+    #checks if an admin key exists in the admin database
     def isAdminKey(self, password):
         db = self.dbClient['admin']
         adminDB = db['admins']
@@ -200,6 +217,7 @@ class BoardManager:
         query = {"hash": str(hashlib.sha256(password).hexdigest())}
         return adminDB.count(query) != 0
 
+    #adds a new admin key to the database with the permission of another admin
     def newAdmin(self, current, newAdmin):
         assert(self.isAdminKey(current))
         assert(not self.isAdminKey(newAdmin))

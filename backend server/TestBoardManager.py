@@ -2,6 +2,8 @@ import unittest
 from BoardManager import BoardManager
 from bson.json_util import loads, dumps
 
+#various tests for boardManager features
+
 class Tests(unittest.TestCase):
     
     #tests that adding and deleting boards works
