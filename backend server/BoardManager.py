@@ -1,5 +1,6 @@
 import pymongo
 import time
+import hashlib
 from bson.json_util import dumps, loads
 
 class BoardManager:
@@ -43,8 +44,8 @@ class BoardManager:
 
 
     #add a board to the database
-    def addBoard(self, tag, desc, name, nsfw, nonce):
-        assert(nonce == 0)
+    def addBoard(self, tag, desc, name, nsfw, adminKey):
+        assert(self.isAdminKey(adminKey))
         assert(not self.boardExists(tag))
         try:
             newBoard = {"tag": tag, "name": name, "description": desc, "nsfw": nsfw, "id": 0}
@@ -167,9 +168,9 @@ class BoardManager:
             raise Exception("failed to delete thread")
     
     #delete an entire board
-    def deleteBoard(self, board, nonce):
-        assert(self.boardExists)
-        assert(nonce == 0)
+    def deleteBoard(self, board, adminKey):
+        assert(self.boardExists(board))
+        assert(self.isAdminKey(adminKey))
         try:
             boardDB = self.db[board]
             boardDB.drop()
@@ -191,4 +192,21 @@ class BoardManager:
             print(e)
             raise Exception("failed to get list of boards")
 
+    def isAdminKey(self, password):
+        db = self.dbClient['admin']
+        adminDB = db['admins']
+        password = str(password)
+        password = password.encode("utf-8")
+        query = {"hash": str(hashlib.sha256(password).hexdigest())}
+        return adminDB.count(query) != 0
 
+    def newAdmin(self, current, newAdmin):
+        assert(self.isAdminKey(current))
+        assert(not self.isAdminKey(newAdmin))
+        db = self.dbClient['admin']
+        adminDB = db['admins']
+        newAdmin = str(newAdmin)
+        newAdmin = newAdmin.encode("utf-8")
+        newAdmin = str(hashlib.sha256(newAdmin).hexdigest())
+        adminDB.insert_one({"hash":newAdmin})
+    

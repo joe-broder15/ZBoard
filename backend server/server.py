@@ -28,7 +28,7 @@ class Boards(Resource):
         b = BoardManager()
         data = request.json
         try:
-            b.addBoard(data['tag'], data['description'], data['name'], data['nsfw'], int(data['nonce']))
+            b.addBoard(data['tag'], data['description'], data['name'], data['nsfw'], str(data['nonce']))
             return {'success': True}
         except:
             return {'success': False}
@@ -39,7 +39,7 @@ class Boards(Resource):
         b = BoardManager()
         data = request.json
         try:
-            b.deleteBoard(data['tag'], int(data['nonce']))
+            b.deleteBoard(data['tag'], str(data['nonce']))
             return {'success': True}
         except:
             return {'success': False}
@@ -72,7 +72,7 @@ class Thread(Resource):
         b = BoardManager()
         try:
             data = request.json
-            b.deleteThread(boardTag, data['threadId'])
+            b.deleteThread(boardTag, int(data['threadId']))
             return {'success': True}
         except:
             return {'success': False}
@@ -163,6 +163,15 @@ class Upload(Resource):
         # except:
         #     return {'success': False}
 
+class Admin(Resource):
+    def post(self):
+        b = BoardManager();
+        try:
+            data = request.json
+            return {'success': b.isAdminKey(data['key'])}
+        except:
+            return {'success': False}
+
 api.add_resource(Boards, '/api/boards')
 api.add_resource(BoardId, '/api/boards/<boardTag>')
 api.add_resource(Thread, '/api/boards/<boardTag>/thread')
@@ -172,6 +181,7 @@ api.add_resource(BoardList, '/api/stats/boards')
 api.add_resource(BoardStats, '/api/stats/boards/<boardTag>')
 api.add_resource(ThreadStats, '/api/stats/boards/<boardTag>/threads/<threadId>')
 api.add_resource(Upload, '/api/upload')
+api.add_resource(Admin, '/api/admin')
 
 #serve uploaded files
 @app.route('/files/<path:path>')

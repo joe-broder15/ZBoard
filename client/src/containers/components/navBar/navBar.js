@@ -38,8 +38,13 @@ class NavBar extends React.Component {
         return(
             <div id="Bar">
                 <div class="HorizontalContainer">
+                    <div>
+                        <a href={"/"}>
+                            <div class="tagLink">Home</div>
+                        </a>
+                    </div>
                     {this.state.boards.map(element => 
-                        <div id={element.nsfw? 'nsfwTag' : 'sfwTag'}>
+                        <div>
                             <a href={"/boards/" + element.tag}>
                                 <div class="tagLink">{element.tag}</div>
                             </a>

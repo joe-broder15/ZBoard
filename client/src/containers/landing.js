@@ -37,7 +37,12 @@ class Landing extends React.Component {
                                 {"/" + element.tag + "/" + " - " + element.name}
                             </Link>
                         </div>
-                    )}                    
+                    )}
+                    <div>
+                        <Link to={"/admin/"}>
+                            Admin Login
+                        </Link>
+                    </div>                    
                 </div>
             </div>
         )

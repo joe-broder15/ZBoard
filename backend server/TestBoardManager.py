@@ -67,6 +67,16 @@ class Tests(unittest.TestCase):
         thread = loads(b.getThread('tst', 0))
         self.assertTrue(thread['posts'][1]['content'] == 'DELETED')
         b.deleteBoard('tst', 0)
+    
+    def testIsAdmin(self):
+        b = BoardManager()
+        self.assertTrue(b.isAdminKey("admin"))
+    
+    def testNewAdmin(self):
+        b = BoardManager()
+        self.assertTrue(not b.isAdminKey("admin1"))
+        b.newAdmin("admin", "admin1")
+        self.assertTrue(b.isAdminKey("admin1"))
 
 if __name__ == '__main__':
     unittest.main()
