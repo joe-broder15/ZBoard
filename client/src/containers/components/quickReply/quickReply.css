@@ -1,5 +1,4 @@
 #QRBody {
-    background-color: gray;
     width: 300px;
     height: 300px;
 }
@@ -19,6 +18,9 @@
 #Form {
     height: 100%;
     width: 100%;
+}
+button {
+    z-index: 90000000000;
 }
 
 .sink {

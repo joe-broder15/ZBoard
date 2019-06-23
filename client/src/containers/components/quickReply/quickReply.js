@@ -1,5 +1,6 @@
 import React from 'react';
 import './quickReply.css'
+import $ from 'jquery';
 var Request = require("request");
 
 //component class
@@ -25,7 +26,7 @@ class quickReply extends React.Component {
     }
 
     componentDidMount(props){
-        // console.log(this.props.tag);
+        $('button').click( this.handleUpload);
     }
 
     //event handlers
@@ -91,6 +92,7 @@ class quickReply extends React.Component {
 
     //uploads a file, and then proceeds
     handleUpload() {
+        console.log("clicked");
         if(this.state.fExists == false && this.props.thread == true){
             alert("Thread must have an image");
             return
@@ -129,19 +131,20 @@ class quickReply extends React.Component {
 
     render(props) {
         return(
-            <div id="QRBody" className="VerticalContainer">
-                <div id="QrBar" className="handle">Quick Reply</div>
-                <label>
-                    <input type="text" value={this.state.author} onChange={this.handleAuthorChange} placeholder="Name"/>
-                    <input type="text" value={this.state.subject} onChange={this.handleSubjectChange} placeholder="Subject"/>
-                </label>
-                <textarea value={this.state.postBody} onChange={this.handleContentChange} placeholder="content"/>
-                <div>
-                    <input key={this.state.fkey} onChange={this.handleFileChange} ref={(ref) => { this.fileInput = ref; }} type="file" />
+            <div id="QRBody" className="VerticalContainer, dropdown-menu dropdown-menu-right">
+                <div className="form-group dropdown-item">
+                    <input type="text" class="form-control" value={this.state.author} onChange={this.handleAuthorChange} placeholder="Name"/>
+                    <input type="text" class="form-control" value={this.state.subject} onChange={this.handleSubjectChange} placeholder="Subject"/>
                 </div>
-                <button disabled={this.state.posting || this.state.uploading} onClick={this.handleUpload}>
-                    Submit
-                </button>
+                <div className="form-group dropdown-item">
+                    <textarea className="form-control" value={this.state.postBody} onChange={this.handleContentChange} placeholder="content"/>
+                </div>
+                <div className="form-group dropdown-item">
+                    <input className="form-control-file" key={this.state.fkey} onChange={this.handleFileChange} ref={(ref) => { this.fileInput = ref; }} type="file" />
+                </div>
+                    <button className="btn btn-primary dropdown-item" disabled={this.state.posting || this.state.uploading}>
+                        Submit
+                    </button>]
                 <p>{(this.state.posting || this.state.uploading) ? 'Posting...' : ''}</p>
             </div>
         )

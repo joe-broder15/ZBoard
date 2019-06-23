@@ -45,11 +45,11 @@ class BoardPage extends React.Component {
             <div id="Container">
                 <NavBar api={this.props.api} tag={this.state.tag} thread={true}/>            
                 <div className="VerticalContainer">
-                    <div id="BoardHeader" className="VerticalContainer">
+                    <div id="BoardHeader" className="jumbotron">
                         <h1 id="SiteName">{"/"+this.state.tag+"/ - " + this.state.name}</h1>
+                        <hr></hr>
                         <p>{this.state.description}</p>
                     </div>
-                    <div className="thinLine"></div>
                     <Catalog tag={this.state.tag} api={this.props.api}/>
                 </div>
             </div>

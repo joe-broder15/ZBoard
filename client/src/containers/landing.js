@@ -28,22 +28,26 @@ class Landing extends React.Component {
 
     render(props) {
         return(
-            <div className="VerticalContainer">
-                <h1 id="SiteName">ZChan</h1>
-                <div className="VerticalContainer" id="BoardsList">
-                    {this.state.boards.map(element => 
-                        <div id={element.nsfw? 'nsfwTag' : 'sfwTag'}>
-                            <Link to={"/boards/" + element.tag}>
-                                {"/" + element.tag + "/" + " - " + element.name}
-                            </Link>
-                        </div>
-                    )}
-                    <div>
-                        <Link to={"/admin/"}>
-                            Admin Login
-                        </Link>
-                    </div>                    
-                </div>
+            <div className="VerticalContainer" id="LandingContainer">
+                <div className="card">
+                    <div className="card-body">
+                        <h1 className="card-title">ZChan</h1>
+                        <ul className="VerticalContainer, list-group" id="BoardsList">
+                            {this.state.boards.map(element => 
+                                <li className="list-group-item" id={element.nsfw? 'nsfwTag' : 'sfwTag'}>
+                                    <Link className="card-link" to={"/boards/" + element.tag}>
+                                        {"/" + element.tag + "/" + " - " + element.name}
+                                    </Link>
+                                </li>
+                            )}
+                            <li className="list-group-item">
+                                <Link classname="card-link" to={"/admin/"}>
+                                    Admin Login
+                                </Link>
+                            </li>                    
+                        </ul>
+                    </div>
+                </div> 
             </div>
         )
     }

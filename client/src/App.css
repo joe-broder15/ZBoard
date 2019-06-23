@@ -45,7 +45,7 @@
 
 div .thinLine {
   height: 1px;
-  width: 100%;
+  width: 90%;
   background-color: black;
 }
 
@@ -62,3 +62,23 @@ div .thinLine {
   padding: 40px;
 }
 
+#LandingContainer {
+  margin-top: 20px;
+}
+
+#BoardHeader {
+  margin-top: 70px;
+  background-color: white;
+}
+
+.card {
+  z-index: 0;
+}
+
+#ThreadContainer {
+  padding-top: 100px;
+}
+
+html {
+  background-color: #9bedcb;
+}

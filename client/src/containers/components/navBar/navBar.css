@@ -17,6 +17,10 @@
 }
 #toolbar {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: right; 
+}
+
+#qrddn {
+    width: 300px;
 }
