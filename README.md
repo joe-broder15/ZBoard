@@ -1,2 +1,2 @@
-# zchan
-An imageboard built with mongo, flask, bootstrap, and react
+# ZBoard
+Full stack imageboard forum software built with React, Flask, MongoDB, and Bootstrap
